@@ -43,3 +43,12 @@ class Invian:
                             transport_type=msg.cls) for msg in msgs
                     )
                 )
+
+    def get_metrics(self):
+        stream = self.get_stream(4)
+        for snap in stream:
+            car_types = {}
+            for car in snap.cars:
+                car_types[car.transport_type.name] = car_types.get(car.transport_type.name, 0) + 1
+            total_cars = sum(car_types.values())
+            print(f"car types: {car_types}, total_cars: {total_cars}")

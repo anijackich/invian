@@ -36,3 +36,7 @@ class _RawMessage:
         self.unix_millis = data['unix_millis']
         self.center = tuple(data['center'])
         self.cls = Transport(data['class'])
+
+@dataclass
+class Metrics:
+    car_types: list[int]
