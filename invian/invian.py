@@ -1,11 +1,14 @@
 import json
+from typing import Iterator
 from kafka import KafkaConsumer
 
+from .utils import utm_to_gps
 from .types import RoadSnapshot, Car, _RawMessage
 
 
 class Invian:
     def __init__(self, server: str, group_id: str, topics: list[str]):
+        print(server, group_id, topics)
         self.kafka_consumer = KafkaConsumer(*topics,
                                             bootstrap_servers=server,
                                             group_id=group_id)
@@ -39,7 +42,7 @@ class Invian:
                 yield RoadSnapshot(
                     timestamp=msgs[0].unix_millis,
                     cars=set(
-                        Car(coords=msg.center,
+                        Car(coords=utm_to_gps(msg.center),
                             transport_type=msg.cls) for msg in msgs
                     )
                 )

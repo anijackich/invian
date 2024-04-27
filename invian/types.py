@@ -19,11 +19,25 @@ class Car:
     def __hash__(self):
         return hash((self.coords, self.transport_type))
 
+    def to_dict(self):
+        return {
+            'coords': self.coords,
+            'transport_type': self.transport_type.value
+        }
+
 
 @dataclass
 class RoadSnapshot:
     timestamp: int
     cars: set[Car]
+
+    def to_dict(self):
+        return {
+            'timestamp': self.timestamp,
+            'cars': list(map(
+                lambda car: car.to_dict(), self.cars
+            ))
+        }
 
 
 @dataclass
