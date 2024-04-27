@@ -14,7 +14,7 @@ KAFKA_HOST, KAFKA_PORT, KAFKA_GROUP, KAFKA_TOPIC = (getenv('KAFKA_HOST'),
                                                     getenv('KAFKA_TOPIC'))
 
 WEBSOCKETS_HOST, WEBSOCKETS_PORT = (getenv('WEBSOCKETS_HOST'),
-                                    getenv('WEBSOCKETS_PORT'))
+                                    int(getenv('WEBSOCKETS_PORT')))
 
 invian = InvianStream(
     server=f"{KAFKA_HOST}:{KAFKA_PORT}",
