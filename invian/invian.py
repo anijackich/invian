@@ -2,7 +2,7 @@ import json
 from typing import Iterator
 from kafka import KafkaConsumer
 
-from .utils import utm_to_gps
+from .geo import utm_to_gps
 from .types import RoadSnapshot, Car, _RawMessage
 
 
