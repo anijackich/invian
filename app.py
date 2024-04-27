@@ -1,10 +1,12 @@
 import json
 import asyncio
 from os import getenv
+from os.path import exists
 from dotenv import load_dotenv
 from websockets.server import serve
 
 from invian import InvianStream
+from invian.geo import OffsetFilter
 
 load_dotenv()
 
@@ -16,10 +18,17 @@ KAFKA_HOST, KAFKA_PORT, KAFKA_GROUP, KAFKA_TOPIC = (getenv('KAFKA_HOST'),
 WEBSOCKETS_HOST, WEBSOCKETS_PORT = (getenv('WEBSOCKETS_HOST'),
                                     int(getenv('WEBSOCKETS_PORT')))
 
+if exists('offset_conf.json'):
+    with open('offset_conf.json') as fp:
+        offset_filter = OffsetFilter(**json.load(fp))
+else:
+    offset_filter = OffsetFilter()
+
 invian = InvianStream(
     server=f"{KAFKA_HOST}:{KAFKA_PORT}",
     group_id=KAFKA_GROUP,
-    topics=[KAFKA_TOPIC]
+    topics=[KAFKA_TOPIC],
+    offset_filter=offset_filter
 )
 
 
