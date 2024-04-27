@@ -8,10 +8,18 @@ from invian import Invian
 
 load_dotenv()
 
+KAFKA_HOST, KAFKA_PORT, KAFKA_GROUP, KAFKA_TOPIC = (getenv('KAFKA_HOST'),
+                                                    getenv('KAFKA_PORT'),
+                                                    getenv('KAFKA_GROUP'),
+                                                    getenv('KAFKA_TOPIC'))
+
+WEBSOCKETS_HOST, WEBSOCKETS_PORT = (getenv('WEBSOCKETS_HOST'),
+                                    getenv('WEBSOCKETS_PORT'))
+
 invian = Invian(
-    server=f"{getenv('KAFKA_HOST')}:{getenv('KAFKA_PORT')}",
-    group_id=getenv('KAFKA_GROUP'),
-    topics=[getenv('KAFKA_TOPIC')]
+    server=f"{KAFKA_HOST}:{KAFKA_PORT}",
+    group_id=KAFKA_GROUP,
+    topics=[KAFKA_TOPIC]
 )
 
 
@@ -22,7 +30,7 @@ async def stream_road(websocket, path):
 
 
 async def main():
-    async with serve(stream_road, "localhost", 8765):
+    async with serve(stream_road, WEBSOCKETS_HOST, WEBSOCKETS_PORT):
         await asyncio.Future()
 
 
