@@ -2,15 +2,20 @@ import json
 from typing import Iterator
 from kafka import KafkaConsumer
 
-from .geo import utm_to_gps
+from .geo import utm_to_gps, OffsetFilter
 from .types import RoadSnapshot, Car, _RawMessage
 
 
 class InvianStream:
-    def __init__(self, server: str, group_id: str, topics: list[str]):
+    def __init__(self, server: str,
+                 group_id: str,
+                 topics: list[str],
+                 offset_filter: OffsetFilter = OffsetFilter()):
         self.kafka_consumer = KafkaConsumer(*topics,
                                             bootstrap_servers=server,
                                             group_id=group_id)
+
+        self.offset_filter = offset_filter
 
     def __del__(self):
         self.kafka_consumer.close()
@@ -41,7 +46,7 @@ class InvianStream:
                 yield RoadSnapshot(
                     timestamp=msgs[0].unix_millis,
                     cars=set(
-                        Car(coords=utm_to_gps(msg.center),
+                        Car(coords=self.offset_filter.offset(utm_to_gps(msg.center)),
                             transport_type=msg.cls) for msg in msgs
                     )
                 )

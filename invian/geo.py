@@ -27,7 +27,7 @@ class OffsetFilter:
             cos(rad_angle) * (point[0] - self.rotation_origin[0]) -
             sin(rad_angle) * (point[1] - self.rotation_origin[1]),
             self.rotation_origin[1] +
-            sin(rad_angle) * (point[0] - self.rotation_origin[0]) -
+            sin(rad_angle) * (point[0] - self.rotation_origin[0]) +
             cos(rad_angle) * (point[1] - self.rotation_origin[1])
         )
 

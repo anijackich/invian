@@ -13,7 +13,7 @@ class Transport(Enum):
 
 @dataclass
 class Car:
-    coords: tuple[int, int]
+    coords: tuple[float, float]
     transport_type: Transport
 
     def __hash__(self):
@@ -43,7 +43,7 @@ class RoadSnapshot:
 @dataclass
 class _RawMessage:
     unix_millis: int
-    center: tuple[int, int]
+    center: tuple[float, float]
     cls: Transport
 
     def __init__(self, data: dict):
