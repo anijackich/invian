@@ -37,6 +37,8 @@ class _RawMessage:
         self.center = tuple(data['center'])
         self.cls = Transport(data['class'])
 
+
 @dataclass
 class Metrics:
-    car_types: list[int]
+    car_types: dict[int, int]
+    total_cars: int

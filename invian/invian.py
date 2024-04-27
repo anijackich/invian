@@ -1,7 +1,7 @@
 import json
 from kafka import KafkaConsumer
 
-from .types import RoadSnapshot, Car, _RawMessage
+from .types import RoadSnapshot, Car, _RawMessage, Metrics
 
 
 class Invian:
@@ -51,4 +51,4 @@ class Invian:
             for car in snap.cars:
                 car_types[car.transport_type.name] = car_types.get(car.transport_type.name, 0) + 1
             total_cars = sum(car_types.values())
-            print(f"car types: {car_types}, total_cars: {total_cars}")
+            yield Metrics(car_types, total_cars)
