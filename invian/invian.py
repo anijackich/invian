@@ -6,7 +6,7 @@ from .utils import utm_to_gps
 from .types import RoadSnapshot, Car, _RawMessage
 
 
-class Invian:
+class InvianStream:
     def __init__(self, server: str, group_id: str, topics: list[str]):
         self.kafka_consumer = KafkaConsumer(*topics,
                                             bootstrap_servers=server,

@@ -1,1 +1,1 @@
-from .invian import Invian
+from .invian import InvianStream

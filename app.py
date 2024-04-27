@@ -4,7 +4,7 @@ from os import getenv
 from dotenv import load_dotenv
 from websockets.server import serve
 
-from invian import Invian
+from invian import InvianStream
 
 load_dotenv()
 
@@ -16,7 +16,7 @@ KAFKA_HOST, KAFKA_PORT, KAFKA_GROUP, KAFKA_TOPIC = (getenv('KAFKA_HOST'),
 WEBSOCKETS_HOST, WEBSOCKETS_PORT = (getenv('WEBSOCKETS_HOST'),
                                     getenv('WEBSOCKETS_PORT'))
 
-invian = Invian(
+invian = InvianStream(
     server=f"{KAFKA_HOST}:{KAFKA_PORT}",
     group_id=KAFKA_GROUP,
     topics=[KAFKA_TOPIC]
