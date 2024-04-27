@@ -8,7 +8,6 @@ from .types import RoadSnapshot, Car, _RawMessage
 
 class Invian:
     def __init__(self, server: str, group_id: str, topics: list[str]):
-        print(server, group_id, topics)
         self.kafka_consumer = KafkaConsumer(*topics,
                                             bootstrap_servers=server,
                                             group_id=group_id)
@@ -22,7 +21,7 @@ class Invian:
             for msg in self.kafka_consumer
         )
 
-    def get_stream(self, buffer_length: int = 4):
+    def get_stream(self, buffer_length: int = 4) -> Iterator[RoadSnapshot]:
         buffer = {}
 
         current_ts = 0
