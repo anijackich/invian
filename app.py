@@ -7,7 +7,7 @@ from websockets.server import serve
 
 from invian import InvianStream
 from invian.geo import OffsetFilter
-from invian.types import RoadSnapshot, RoadMetrics
+from invian.types import RoadSnapshot, RoadMetrics, Transport
 
 load_dotenv()
 
@@ -62,19 +62,28 @@ async def stream_metrics(websocket, _):
 
     cars_cnt = 0
     frames = 0
+    transport_types = [0 for _ in range(len(Transport))]
 
-    previous_metric = RoadMetrics(cur_timestamp, 0)
+    previous_metric = RoadMetrics(cur_timestamp, 0, transport_types)
     while True:
         snapshot: RoadSnapshot = await queues[1].get()
 
         if snapshot.timestamp - cur_timestamp > interval:
-            avg_cars = int(cars_cnt / frames) if frames != 0 else 0
-            previous_metric = RoadMetrics(cur_timestamp, avg_cars)
+            if frames != 0:
+                avg_cars = int(cars_cnt / frames)
+                transport_types = [t / frames for t in transport_types]
+            else:
+                avg_cars = 0
+                transport_types = [0 for _ in range(len(Transport))]
+            previous_metric = RoadMetrics(cur_timestamp, avg_cars, transport_types)
 
             cur_timestamp = snapshot.timestamp
+            transport_types = [0 for _ in range(len(Transport))]
             cars_cnt = 0
             frames = 0
 
+        for car in snapshot.cars:
+            transport_types[car.transport_type.value] += 1
         cars_cnt += len(snapshot.cars)
         frames += 1
 
