@@ -16,8 +16,12 @@ KAFKA_HOST, KAFKA_PORT, KAFKA_GROUP, KAFKA_TOPIC = (getenv('KAFKA_HOST'),
                                                     getenv('KAFKA_GROUP'),
                                                     getenv('KAFKA_TOPIC'))
 
-WEBSOCKETS_HOST, WEBSOCKETS_PORT = (getenv('WEBSOCKETS_HOST'),
-                                    int(getenv('WEBSOCKETS_PORT')))
+ROAD_WEBSOCKETS_HOST, ROAD_WEBSOCKETS_PORT = (getenv('ROAD_WEBSOCKETS_HOST'),
+                                              int(getenv('ROAD_WEBSOCKETS_PORT')))
+
+METRICS_WEBSOCKETS_HOST, METRICS_WEBSOCKETS_PORT = (getenv('METRICS_WEBSOCKETS_HOST'),
+                                                    int(getenv('METRICS_WEBSOCKETS_PORT')))
+
 
 if exists('offset_conf.json'):
     with open('offset_conf.json') as fp:
@@ -83,8 +87,8 @@ async def stream_metrics(websocket, _):
 
 
 async def main():
-    road_socket = serve(stream_road, WEBSOCKETS_HOST, WEBSOCKETS_PORT)
-    metrics_socket = serve(stream_metrics, WEBSOCKETS_HOST, WEBSOCKETS_PORT + 10)
+    road_socket = serve(stream_road, ROAD_WEBSOCKETS_HOST, ROAD_WEBSOCKETS_PORT)
+    metrics_socket = serve(stream_metrics, METRICS_WEBSOCKETS_HOST, METRICS_WEBSOCKETS_PORT)
     await asyncio.gather(distribute_messages(invian.get_stream()), road_socket, metrics_socket)
 
 
