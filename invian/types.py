@@ -44,11 +44,13 @@ class RoadSnapshot:
 class RoadMetrics:
     timestamp: int
     average_load: int
+    transport_types: dict[Transport, float]
 
     def to_dict(self):
         return {
             'timestamp': self.timestamp,
-            'average_load': self.average_load
+            'average_load': self.average_load,
+            'transport_types': self.transport_types
         }
 
 

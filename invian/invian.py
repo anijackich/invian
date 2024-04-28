@@ -3,7 +3,11 @@ from typing import Iterator
 from kafka import KafkaConsumer
 
 from .geo import utm_to_gps, OffsetFilter
-from .types import RoadSnapshot, Car, _RawMessage
+from .types import (Car,
+                    Transport,
+                    RoadSnapshot,
+                    RoadMetrics,
+                    _RawMessage)
 
 
 class InvianStream:
@@ -13,14 +17,12 @@ class InvianStream:
                  offset_filter: OffsetFilter = OffsetFilter()):
         self.kafka_consumer = KafkaConsumer(*topics,
                                             bootstrap_servers=server,
-                                            group_id=group_id)
+                                            group_id=group_id,
+                                            api_version=(0, 11, 5))
 
         self.offset_filter = offset_filter
 
-    def __del__(self):
-        self.kafka_consumer.close()
-
-    def _get_raw_stream(self):
+    def _get_raw_stream(self) -> Iterator[_RawMessage]:
         return (
             _RawMessage(json.loads(msg.value.decode()))
             for msg in self.kafka_consumer
@@ -50,3 +52,32 @@ class InvianStream:
                             transport_type=msg.cls) for msg in msgs
                     )
                 )
+
+    def get_metrics_stream(self, interval: float = 500) -> Iterator[RoadMetrics]:
+        cars, frames = 0, 0
+        transport_types = {t.value: 0. for t in Transport}
+
+        current_ts = 0
+        current_metric = RoadMetrics(current_ts, 0, transport_types)
+
+        for snapshot in self.get_stream():
+            if snapshot.timestamp - current_ts > interval:
+                current_metric = RoadMetrics(
+                    current_ts,
+                    int(cars / frames)
+                    if frames != 0 else 0,
+                    {t[0]: t[1] / frames for t in transport_types.items()}
+                    if frames != 0 else {t.value: 0. for t in Transport}
+                )
+
+                current_ts = snapshot.timestamp
+                transport_types = {t.value: 0. for t in Transport}
+                cars, frames = 0, 0
+
+            for car in snapshot.cars:
+                transport_types[car.transport_type.value] += 1
+
+            cars += len(snapshot.cars)
+            frames += 1
+
+            yield current_metric
