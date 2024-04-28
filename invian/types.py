@@ -41,6 +41,18 @@ class RoadSnapshot:
 
 
 @dataclass
+class RoadMetrics:
+    timestamp: int
+    average_load: int
+
+    def to_dict(self):
+        return {
+            'timestamp': self.timestamp,
+            'average_load': self.average_load
+        }
+
+
+@dataclass
 class _RawMessage:
     unix_millis: int
     center: tuple[float, float]
